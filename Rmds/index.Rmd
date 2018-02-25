@@ -1,0 +1,17 @@
+---
+title: ログデータ処理で始めるlubridate入門
+author: 前田和寛(@kazutan)
+date: "2018-02-24"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+---
+
+# はじめに {-}
+
+これはSappoRo.R #8 にて同タイトルで発表した内容です。本編は次のページ以降になります
+
+## 参考資料 {-}
+
+- [lubridateパッケージの本家サイト](http://lubridate.tidyverse.org/index.html)
+- [Dates and Times Cheat Sheet(pdf注意)](https://github.com/rstudio/cheatsheets/raw/master/lubridate.pdf)

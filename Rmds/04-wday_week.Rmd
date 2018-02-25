@@ -1,0 +1,218 @@
+# 曜日別・週別集計
+
+ここでは、lesson2で準備した`df_log`という仮想ログデータを用いて、曜日別集計と週別集計を算出してまとめることを目指します。さらに、それらを掛けあわせたデータセットと可視化を行います。その中でlubridateによる日時データからの特定の要素(週、曜日など)取り出し解説します。
+
+## 想定シナリオ
+
+lesson2で作成したアイテム購入ログデータを元に曜日別集計を行います:
+
+- 曜日別購入件数
+- 曜日別売上合計
+- 曜日別購入単価平均
+
+この集計により、どの曜日に売上が多かったかなどを検証することができます。
+
+また、同様に週間集計を行います:
+
+- 週間別購入件数
+- 週間別売上合計
+- 週間別購入単価平均
+
+この集計により、どの週で売上が多かったかなどを検証することができます。
+
+## 処理の実行
+
+### パッケージ読み込み
+
+ここで使用するパッケージを読み込みます:
+
+```{r 04_library, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(lubridate)
+library(gridExtra)
+```
+
+### データ読み込み
+
+lesson2で作成したcsvを読み込みます。`readr::read_csv()`を使います:
+
+```{r 04_read_df_log}
+df_log <- readr::read_csv("df_log.csv")
+```
+
+### データハンドリングと可視化
+
+#### 曜日別
+
+それぞれの曜日でどれだけ売上があったかを集計してデータセットにします。基本的な流れは以下のとおりです:
+
+- 日時のタイムスタンプから曜日を取得して変数(weekday)を作成
+- weekdayごとに処理するようにグループ化
+- 各種集計を実施
+
+実際のRのコードは以下のようになります:
+
+```{r 04_wday_handling}
+df_log_wday <- df_log %>% 
+  # 曜日を取得して変数を追加
+  mutate(weekday = wday(stamp, label = TRUE, abbr = FALSE)) %>% 
+  group_by(weekday) %>% 
+  summarise(
+    n_buy = n(),
+    value_buy = sum(value),
+    mean_buy = mean(value)
+  )
+```
+
+この処理を行ったデータセットは以下のようになります:
+
+```{r 04_wday_table}
+knitr::kable(df_log_wday)
+```
+
+このデータを元にggplot2で可視化してみます:
+
+```{r 04_wday_plot}
+p_wday <- ggplot(df_log_wday)
+p_wday1 <- p_wday +
+  geom_bar(aes(x = weekday, y = n_buy), stat = "identity")
+p_wday2 <- p_wday +
+  geom_bar(aes(x = weekday, y = value_buy), stat = "identity")
+p_wday3 <- p_wday +
+  geom_bar(aes(x = weekday, y = mean_buy), stat = "identity")
+grid.arrange(p_wday1, p_wday2, p_wday3)
+```
+
+#### 週間
+
+それぞれの週でどれだけ売上があったかを集計してデータセットにします。基本的な流れは以下のとおりです:
+
+- 日時のタイムスタンプから週番号を取り出した変数(week)を作成
+- weekごとに処理するようにグループ化
+- 各種集計を実施
+
+実際のRのコードは以下のようになります:
+
+```{r 04_week_handle}
+df_log_week <- df_log %>% 
+  # タイムスタンプから週番号を取得
+  mutate(week = week(stamp)) %>% 
+  group_by(week) %>% 
+  summarise(
+    n_buy = n(),
+    value_buy = sum(value),
+    mean_buy = mean(value)
+  )
+```
+
+この処理を行ったデータセットは以下のようになります:
+
+```{r 04_week_table}
+knitr::kable(df_log_week)
+```
+
+このデータを元にggplot2で可視化してみます:
+
+```{r 04_week_plot}
+p_week <- ggplot(df_log_week)
+p_week1 <- p_week +
+  geom_bar(aes(x = week, y = n_buy), stat = "identity")
+p_week2 <- p_week +
+  geom_bar(aes(x = week, y = value_buy), stat = "identity")
+p_week3 <- p_week +
+  geom_bar(aes(x = week, y = mean_buy), stat = "identity")
+grid.arrange(p_week1, p_week2, p_week3)
+```
+
+
+#### 曜日x週
+
+ついでに、曜日x週で集計するようにやってみます。両方の変数を`group_by()`で両方を指定すればOKです;
+
+```{r 04_week_wday_handling}
+df_log_weekday_no <- df_log %>% 
+  # 変数を準備
+  mutate(weekday = wday(stamp, label = TRUE, abbr = FALSE),
+         week_no = week(stamp)) %>% 
+  # グループ化
+  group_by(week_no, weekday) %>% 
+  summarise(
+    n_buy = n(),
+    value_buy = sum(value),
+    mean_buy = mean(value)
+  )
+```
+
+この処理を行ったデータセットは以下のようになります:
+
+```{r 04_week_wday_table}
+knitr::kable(head(df_log_weekday_no))
+```
+
+このデータを元にggplot2で可視化してみます:
+
+```{r 04_week_wday_plot}
+# 曜日と週番号で可視化
+p_weekday_no <- ggplot(df_log_weekday_no)
+p_weekday_no1 <- p_weekday_no +
+  geom_tile(aes(x = week_no, y = weekday, fill = n_buy))
+p_weekday_no2 <- p_weekday_no +
+  geom_tile(aes(x = week_no, y = weekday, fill = value_buy))
+p_weekday_no3 <- p_weekday_no +
+  geom_tile(aes(x = week_no, y = weekday, fill = mean_buy))
+grid.arrange(p_weekday_no1, p_weekday_no2, p_weekday_no3)
+```
+
+
+### 解説
+
+今回のポイントは、日時データから週番号および曜日を取得するところです。
+
+週番号を取得するには、`week()`を利用します:
+
+```{r 04_example1}
+x <- ymd_hms("2018-02-24 15:30:20")
+
+# 週番号を取得
+week(x)
+
+# ついでにquaterも
+quarter(x)
+
+# さらにsemesterも
+semester(x)
+```
+
+このあたりはlesson3と同様です。セメスターもクウォーターも切り出せます。開始時期も引数で指定できます。
+
+曜日を取得するには、`wday()`を利用します:
+
+```{r 04_example2}
+# 曜日を数値で取得
+wday(x)
+
+# 曜日を文字列(ラベル)で取得
+wday(x, label = TRUE)
+
+# 曜日を順序付きfactor型で非省略
+wday(x, label = TRUE, abbr = FALSE)
+
+# 曜日を月曜からスタートさせる
+wday(x, label = TRUE, abbr = FALSE,
+     week_start = 1)
+
+```
+
+セットしているlocaleにあわせて表示されます。自動的にやってくれるので便利です。
+
+## 参照
+
+[Get/set weeks component of a date-time](http://lubridate.tidyverse.org/reference/week.html)
+
+: 週番号を取得する関数の説明
+
+[Get/set days component of a date-time](http://lubridate.tidyverse.org/reference/day.html)
+
+: 曜日を取得する関数`wday()`などの説明
+
+

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>ログデータ処理で始めるlubridate入門</title>
+  <meta name="description" content="ログデータ処理で始めるlubridate入門">
+  <meta name="generator" content="bookdown 0.7.1 and GitBook 2.6.7">
+
+  <meta property="og:title" content="ログデータ処理で始めるlubridate入門" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="ログデータ処理で始めるlubridate入門" />
+  
+  
+  
+
+<meta name="author" content="前田和寛(@kazutan)">
+
+
+<meta name="date" content="2018-02-24">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="03-daily_hourly.html">
+<link rel="next" href="05-interval.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./index.html">ログデータ処理で学ぶlubridate入門</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>はじめに</a><ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#参考資料"><i class="fa fa-check"></i>参考資料</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="01-lubridate.html"><a href="01-lubridate.html"><i class="fa fa-check"></i><b>1</b> lubridateパッケージ</a><ul>
+<li class="chapter" data-level="1.1" data-path="01-lubridate.html"><a href="01-lubridate.html#lubridateパッケージとは"><i class="fa fa-check"></i><b>1.1</b> lubridateパッケージとは</a></li>
+<li class="chapter" data-level="1.2" data-path="01-lubridate.html"><a href="01-lubridate.html#インストールと読み込み"><i class="fa fa-check"></i><b>1.2</b> インストールと読み込み</a></li>
+<li class="chapter" data-level="1.3" data-path="01-lubridate.html"><a href="01-lubridate.html#日付や時刻の処理"><i class="fa fa-check"></i><b>1.3</b> 日付や時刻の処理</a><ul>
+<li class="chapter" data-level="1.3.1" data-path="01-lubridate.html"><a href="01-lubridate.html#日付データ"><i class="fa fa-check"></i><b>1.3.1</b> 日付データ</a></li>
+<li class="chapter" data-level="1.3.2" data-path="01-lubridate.html"><a href="01-lubridate.html#時刻データ"><i class="fa fa-check"></i><b>1.3.2</b> 時刻データ</a></li>
+<li class="chapter" data-level="1.3.3" data-path="01-lubridate.html"><a href="01-lubridate.html#日付時刻データ"><i class="fa fa-check"></i><b>1.3.3</b> 日付&amp;時刻データ</a></li>
+<li class="chapter" data-level="1.3.4" data-path="01-lubridate.html"><a href="01-lubridate.html#柔軟なフォーマットに対応するには"><i class="fa fa-check"></i><b>1.3.4</b> 柔軟なフォーマットに対応するには</a></li>
+</ul></li>
+<li class="chapter" data-level="1.4" data-path="01-lubridate.html"><a href="01-lubridate.html#参照"><i class="fa fa-check"></i><b>1.4</b> 参照</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="02-makelog_duration.html"><a href="02-makelog_duration.html"><i class="fa fa-check"></i><b>2</b> 仮想ログデータ生成</a><ul>
+<li class="chapter" data-level="2.1" data-path="02-makelog_duration.html"><a href="02-makelog_duration.html#想定シナリオ"><i class="fa fa-check"></i><b>2.1</b> 想定シナリオ</a></li>
+<li class="chapter" data-level="2.2" data-path="02-makelog_duration.html"><a href="02-makelog_duration.html#データ生成"><i class="fa fa-check"></i><b>2.2</b> データ生成</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="02-makelog_duration.html"><a href="02-makelog_duration.html#rコード"><i class="fa fa-check"></i><b>2.2.1</b> Rコード</a></li>
+<li class="chapter" data-level="2.2.2" data-path="02-makelog_duration.html"><a href="02-makelog_duration.html#解説"><i class="fa fa-check"></i><b>2.2.2</b> 解説</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="02-makelog_duration.html"><a href="02-makelog_duration.html#参照-1"><i class="fa fa-check"></i><b>2.3</b> 参照</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html"><i class="fa fa-check"></i><b>3</b> 日別・時間別集計</a><ul>
+<li class="chapter" data-level="3.1" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html#想定シナリオ-1"><i class="fa fa-check"></i><b>3.1</b> 想定シナリオ</a></li>
+<li class="chapter" data-level="3.2" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html#処理の実行"><i class="fa fa-check"></i><b>3.2</b> 処理の実行</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html#パッケージ読み込み"><i class="fa fa-check"></i><b>3.2.1</b> パッケージ読み込み</a></li>
+<li class="chapter" data-level="3.2.2" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html#データ読み込み"><i class="fa fa-check"></i><b>3.2.2</b> データ読み込み</a></li>
+<li class="chapter" data-level="3.2.3" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html#データハンドリングと可視化"><i class="fa fa-check"></i><b>3.2.3</b> データハンドリングと可視化</a></li>
+<li class="chapter" data-level="3.2.4" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html#解説-1"><i class="fa fa-check"></i><b>3.2.4</b> 解説</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html#参考資料-1"><i class="fa fa-check"></i><b>3.3</b> 参考資料</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="04-wday_week.html"><a href="04-wday_week.html"><i class="fa fa-check"></i><b>4</b> 曜日別・週別集計</a><ul>
+<li class="chapter" data-level="4.1" data-path="04-wday_week.html"><a href="04-wday_week.html#想定シナリオ-2"><i class="fa fa-check"></i><b>4.1</b> 想定シナリオ</a></li>
+<li class="chapter" data-level="4.2" data-path="04-wday_week.html"><a href="04-wday_week.html#処理の実行-1"><i class="fa fa-check"></i><b>4.2</b> 処理の実行</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="04-wday_week.html"><a href="04-wday_week.html#パッケージ読み込み-1"><i class="fa fa-check"></i><b>4.2.1</b> パッケージ読み込み</a></li>
+<li class="chapter" data-level="4.2.2" data-path="04-wday_week.html"><a href="04-wday_week.html#データ読み込み-1"><i class="fa fa-check"></i><b>4.2.2</b> データ読み込み</a></li>
+<li class="chapter" data-level="4.2.3" data-path="04-wday_week.html"><a href="04-wday_week.html#データハンドリングと可視化-1"><i class="fa fa-check"></i><b>4.2.3</b> データハンドリングと可視化</a></li>
+<li class="chapter" data-level="4.2.4" data-path="04-wday_week.html"><a href="04-wday_week.html#解説-2"><i class="fa fa-check"></i><b>4.2.4</b> 解説</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="04-wday_week.html"><a href="04-wday_week.html#参照-2"><i class="fa fa-check"></i><b>4.3</b> 参照</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="05-interval.html"><a href="05-interval.html"><i class="fa fa-check"></i><b>5</b> 特定の期間を利用した処理</a><ul>
+<li class="chapter" data-level="5.1" data-path="05-interval.html"><a href="05-interval.html#想定シナリオ-3"><i class="fa fa-check"></i><b>5.1</b> 想定シナリオ</a></li>
+<li class="chapter" data-level="5.2" data-path="05-interval.html"><a href="05-interval.html#処理の実行-2"><i class="fa fa-check"></i><b>5.2</b> 処理の実行</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="05-interval.html"><a href="05-interval.html#パッケージ読み込み-2"><i class="fa fa-check"></i><b>5.2.1</b> パッケージ読み込み</a></li>
+<li class="chapter" data-level="5.2.2" data-path="05-interval.html"><a href="05-interval.html#データ読み込み-2"><i class="fa fa-check"></i><b>5.2.2</b> データ読み込み</a></li>
+<li class="chapter" data-level="5.2.3" data-path="05-interval.html"><a href="05-interval.html#データハンドリングと可視化-2"><i class="fa fa-check"></i><b>5.2.3</b> データハンドリングと可視化</a></li>
+<li class="chapter" data-level="5.2.4" data-path="05-interval.html"><a href="05-interval.html#解説-3"><i class="fa fa-check"></i><b>5.2.4</b> 解説</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="05-interval.html"><a href="05-interval.html#参照-3"><i class="fa fa-check"></i><b>5.3</b> 参照</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">ログデータ処理で始めるlubridate入門</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="曜日別週別集計" class="section level1">
+<h1><span class="header-section-number">lesson: 4</span> 曜日別・週別集計</h1>
+<p>ここでは、lesson2で準備した<code>df_log</code>という仮想ログデータを用いて、曜日別集計と週別集計を算出してまとめることを目指します。さらに、それらを掛けあわせたデータセットと可視化を行います。その中でlubridateによる日時データからの特定の要素(週、曜日など)取り出し解説します。</p>
+<div id="想定シナリオ-2" class="section level2">
+<h2><span class="header-section-number">4.1</span> 想定シナリオ</h2>
+<p>lesson2で作成したアイテム購入ログデータを元に曜日別集計を行います:</p>
+<ul>
+<li>曜日別購入件数</li>
+<li>曜日別売上合計</li>
+<li>曜日別購入単価平均</li>
+</ul>
+<p>この集計により、どの曜日に売上が多かったかなどを検証することができます。</p>
+<p>また、同様に週間集計を行います:</p>
+<ul>
+<li>週間別購入件数</li>
+<li>週間別売上合計</li>
+<li>週間別購入単価平均</li>
+</ul>
+<p>この集計により、どの週で売上が多かったかなどを検証することができます。</p>
+</div>
+<div id="処理の実行-1" class="section level2">
+<h2><span class="header-section-number">4.2</span> 処理の実行</h2>
+<div id="パッケージ読み込み-1" class="section level3">
+<h3><span class="header-section-number">4.2.1</span> パッケージ読み込み</h3>
+<p>ここで使用するパッケージを読み込みます:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(lubridate)
+<span class="kw">library</span>(gridExtra)</code></pre></div>
+</div>
+<div id="データ読み込み-1" class="section level3">
+<h3><span class="header-section-number">4.2.2</span> データ読み込み</h3>
+<p>lesson2で作成したcsvを読み込みます。<code>readr::read_csv()</code>を使います:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_log &lt;-<span class="st"> </span>readr<span class="op">::</span><span class="kw">read_csv</span>(<span class="st">&quot;df_log.csv&quot;</span>)
+ <span class="co">#&gt;  Parsed with column specification:</span>
+ <span class="co">#&gt;  cols(</span>
+ <span class="co">#&gt;    stamp = col_datetime(format = &quot;&quot;),</span>
+ <span class="co">#&gt;    id = col_integer(),</span>
+ <span class="co">#&gt;    item = col_character(),</span>
+ <span class="co">#&gt;    value = col_double()</span>
+ <span class="co">#&gt;  )</span></code></pre></div>
+</div>
+<div id="データハンドリングと可視化-1" class="section level3">
+<h3><span class="header-section-number">4.2.3</span> データハンドリングと可視化</h3>
+<div id="曜日別" class="section level4">
+<h4><span class="header-section-number">4.2.3.1</span> 曜日別</h4>
+<p>それぞれの曜日でどれだけ売上があったかを集計してデータセットにします。基本的な流れは以下のとおりです:</p>
+<ul>
+<li>日時のタイムスタンプから曜日を取得して変数(weekday)を作成</li>
+<li>weekdayごとに処理するようにグループ化</li>
+<li>各種集計を実施</li>
+</ul>
+<p>実際のRのコードは以下のようになります:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_log_wday &lt;-<span class="st"> </span>df_log <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># 曜日を取得して変数を追加</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">weekday =</span> <span class="kw">wday</span>(stamp, <span class="dt">label =</span> <span class="ot">TRUE</span>, <span class="dt">abbr =</span> <span class="ot">FALSE</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(weekday) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(
+    <span class="dt">n_buy =</span> <span class="kw">n</span>(),
+    <span class="dt">value_buy =</span> <span class="kw">sum</span>(value),
+    <span class="dt">mean_buy =</span> <span class="kw">mean</span>(value)
+  )</code></pre></div>
+<p>この処理を行ったデータセットは以下のようになります:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw">kable</span>(df_log_wday)</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">weekday</th>
+<th align="right">n_buy</th>
+<th align="right">value_buy</th>
+<th align="right">mean_buy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">日曜日</td>
+<td align="right">1374</td>
+<td align="right">560200</td>
+<td align="right">407.7147</td>
+</tr>
+<tr class="even">
+<td align="left">月曜日</td>
+<td align="right">1610</td>
+<td align="right">600300</td>
+<td align="right">372.8571</td>
+</tr>
+<tr class="odd">
+<td align="left">火曜日</td>
+<td align="right">1533</td>
+<td align="right">616300</td>
+<td align="right">402.0222</td>
+</tr>
+<tr class="even">
+<td align="left">水曜日</td>
+<td align="right">1377</td>
+<td align="right">526500</td>
+<td align="right">382.3529</td>
+</tr>
+<tr class="odd">
+<td align="left">木曜日</td>
+<td align="right">1339</td>
+<td align="right">510200</td>
+<td align="right">381.0306</td>
+</tr>
+<tr class="even">
+<td align="left">金曜日</td>
+<td align="right">1383</td>
+<td align="right">546000</td>
+<td align="right">394.7939</td>
+</tr>
+<tr class="odd">
+<td align="left">土曜日</td>
+<td align="right">1384</td>
+<td align="right">518500</td>
+<td align="right">374.6387</td>
+</tr>
+</tbody>
+</table>
+<p>このデータを元にggplot2で可視化してみます:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p_wday &lt;-<span class="st"> </span><span class="kw">ggplot</span>(df_log_wday)
+p_wday1 &lt;-<span class="st"> </span>p_wday <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="kw">aes</span>(<span class="dt">x =</span> weekday, <span class="dt">y =</span> n_buy), <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>)
+p_wday2 &lt;-<span class="st"> </span>p_wday <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="kw">aes</span>(<span class="dt">x =</span> weekday, <span class="dt">y =</span> value_buy), <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>)
+p_wday3 &lt;-<span class="st"> </span>p_wday <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="kw">aes</span>(<span class="dt">x =</span> weekday, <span class="dt">y =</span> mean_buy), <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>)
+<span class="kw">grid.arrange</span>(p_wday1, p_wday2, p_wday3)</code></pre></div>
+<p><img src="intro_lubridate_files/figure-html/04_wday_plot-1.png" width="672" /></p>
+</div>
+<div id="週間" class="section level4">
+<h4><span class="header-section-number">4.2.3.2</span> 週間</h4>
+<p>それぞれの週でどれだけ売上があったかを集計してデータセットにします。基本的な流れは以下のとおりです:</p>
+<ul>
+<li>日時のタイムスタンプから週番号を取り出した変数(week)を作成</li>
+<li>weekごとに処理するようにグループ化</li>
+<li>各種集計を実施</li>
+</ul>
+<p>実際のRのコードは以下のようになります:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_log_week &lt;-<span class="st"> </span>df_log <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># タイムスタンプから週番号を取得</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">week =</span> <span class="kw">week</span>(stamp)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(week) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(
+    <span class="dt">n_buy =</span> <span class="kw">n</span>(),
+    <span class="dt">value_buy =</span> <span class="kw">sum</span>(value),
+    <span class="dt">mean_buy =</span> <span class="kw">mean</span>(value)
+  )</code></pre></div>
+<p>この処理を行ったデータセットは以下のようになります:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw">kable</span>(df_log_week)</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">week</th>
+<th align="right">n_buy</th>
+<th align="right">value_buy</th>
+<th align="right">mean_buy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">1320</td>
+<td align="right">511800</td>
+<td align="right">387.7273</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">1367</td>
+<td align="right">549900</td>
+<td align="right">402.2677</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">1395</td>
+<td align="right">529600</td>
+<td align="right">379.6416</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">1337</td>
+<td align="right">506600</td>
+<td align="right">378.9080</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="right">1416</td>
+<td align="right">537300</td>
+<td align="right">379.4492</td>
+</tr>
+<tr class="even">
+<td align="right">6</td>
+<td align="right">1409</td>
+<td align="right">538000</td>
+<td align="right">381.8311</td>
+</tr>
+<tr class="odd">
+<td align="right">7</td>
+<td align="right">1361</td>
+<td align="right">531500</td>
+<td align="right">390.5217</td>
+</tr>
+<tr class="even">
+<td align="right">8</td>
+<td align="right">395</td>
+<td align="right">173300</td>
+<td align="right">438.7342</td>
+</tr>
+</tbody>
+</table>
+<p>このデータを元にggplot2で可視化してみます:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p_week &lt;-<span class="st"> </span><span class="kw">ggplot</span>(df_log_week)
+p_week1 &lt;-<span class="st"> </span>p_week <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="kw">aes</span>(<span class="dt">x =</span> week, <span class="dt">y =</span> n_buy), <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>)
+p_week2 &lt;-<span class="st"> </span>p_week <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="kw">aes</span>(<span class="dt">x =</span> week, <span class="dt">y =</span> value_buy), <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>)
+p_week3 &lt;-<span class="st"> </span>p_week <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="kw">aes</span>(<span class="dt">x =</span> week, <span class="dt">y =</span> mean_buy), <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>)
+<span class="kw">grid.arrange</span>(p_week1, p_week2, p_week3)</code></pre></div>
+<p><img src="intro_lubridate_files/figure-html/04_week_plot-1.png" width="672" /></p>
+</div>
+<div id="曜日x週" class="section level4">
+<h4><span class="header-section-number">4.2.3.3</span> 曜日x週</h4>
+<p>ついでに、曜日x週で集計するようにやってみます。両方の変数を<code>group_by()</code>で両方を指定すればOKです;</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_log_weekday_no &lt;-<span class="st"> </span>df_log <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># 変数を準備</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">weekday =</span> <span class="kw">wday</span>(stamp, <span class="dt">label =</span> <span class="ot">TRUE</span>, <span class="dt">abbr =</span> <span class="ot">FALSE</span>),
+         <span class="dt">week_no =</span> <span class="kw">week</span>(stamp)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># グループ化</span>
+<span class="st">  </span><span class="kw">group_by</span>(week_no, weekday) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(
+    <span class="dt">n_buy =</span> <span class="kw">n</span>(),
+    <span class="dt">value_buy =</span> <span class="kw">sum</span>(value),
+    <span class="dt">mean_buy =</span> <span class="kw">mean</span>(value)
+  )</code></pre></div>
+<p>この処理を行ったデータセットは以下のようになります:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw">kable</span>(<span class="kw">head</span>(df_log_weekday_no))</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">week_no</th>
+<th align="left">weekday</th>
+<th align="right">n_buy</th>
+<th align="right">value_buy</th>
+<th align="right">mean_buy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">日曜日</td>
+<td align="right">195</td>
+<td align="right">78900</td>
+<td align="right">404.6154</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">月曜日</td>
+<td align="right">197</td>
+<td align="right">72800</td>
+<td align="right">369.5431</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">火曜日</td>
+<td align="right">165</td>
+<td align="right">65700</td>
+<td align="right">398.1818</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">水曜日</td>
+<td align="right">188</td>
+<td align="right">64900</td>
+<td align="right">345.2128</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">木曜日</td>
+<td align="right">189</td>
+<td align="right">67700</td>
+<td align="right">358.2011</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">金曜日</td>
+<td align="right">180</td>
+<td align="right">77800</td>
+<td align="right">432.2222</td>
+</tr>
+</tbody>
+</table>
+<p>このデータを元にggplot2で可視化してみます:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 曜日と週番号で可視化</span>
+p_weekday_no &lt;-<span class="st"> </span><span class="kw">ggplot</span>(df_log_weekday_no)
+p_weekday_no1 &lt;-<span class="st"> </span>p_weekday_no <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_tile</span>(<span class="kw">aes</span>(<span class="dt">x =</span> week_no, <span class="dt">y =</span> weekday, <span class="dt">fill =</span> n_buy))
+p_weekday_no2 &lt;-<span class="st"> </span>p_weekday_no <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_tile</span>(<span class="kw">aes</span>(<span class="dt">x =</span> week_no, <span class="dt">y =</span> weekday, <span class="dt">fill =</span> value_buy))
+p_weekday_no3 &lt;-<span class="st"> </span>p_weekday_no <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_tile</span>(<span class="kw">aes</span>(<span class="dt">x =</span> week_no, <span class="dt">y =</span> weekday, <span class="dt">fill =</span> mean_buy))
+<span class="kw">grid.arrange</span>(p_weekday_no1, p_weekday_no2, p_weekday_no3)</code></pre></div>
+<p><img src="intro_lubridate_files/figure-html/04_week_wday_plot-1.png" width="672" /></p>
+</div>
+</div>
+<div id="解説-2" class="section level3">
+<h3><span class="header-section-number">4.2.4</span> 解説</h3>
+<p>今回のポイントは、日時データから週番号および曜日を取得するところです。</p>
+<p>週番号を取得するには、<code>week()</code>を利用します:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">ymd_hms</span>(<span class="st">&quot;2018-02-24 15:30:20&quot;</span>)
+
+<span class="co"># 週番号を取得</span>
+<span class="kw">week</span>(x)
+ <span class="co">#&gt;  [1] 8</span>
+
+<span class="co"># ついでにquaterも</span>
+<span class="kw">quarter</span>(x)
+ <span class="co">#&gt;  [1] 1</span>
+
+<span class="co"># さらにsemesterも</span>
+<span class="kw">semester</span>(x)
+ <span class="co">#&gt;  [1] 1</span></code></pre></div>
+<p>このあたりはlesson3と同様です。セメスターもクウォーターも切り出せます。開始時期も引数で指定できます。</p>
+<p>曜日を取得するには、<code>wday()</code>を利用します:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 曜日を数値で取得</span>
+<span class="kw">wday</span>(x)
+ <span class="co">#&gt;  [1] 7</span>
+
+<span class="co"># 曜日を文字列(ラベル)で取得</span>
+<span class="kw">wday</span>(x, <span class="dt">label =</span> <span class="ot">TRUE</span>)
+ <span class="co">#&gt;  [1] 土</span>
+ <span class="co">#&gt;  Levels: 日 &lt; 月 &lt; 火 &lt; 水 &lt; 木 &lt; 金 &lt; 土</span>
+
+<span class="co"># 曜日を順序付きfactor型で非省略</span>
+<span class="kw">wday</span>(x, <span class="dt">label =</span> <span class="ot">TRUE</span>, <span class="dt">abbr =</span> <span class="ot">FALSE</span>)
+ <span class="co">#&gt;  [1] 土曜日</span>
+ <span class="co">#&gt;  7 Levels: 日曜日 &lt; 月曜日 &lt; 火曜日 &lt; 水曜日 &lt; 木曜日 &lt; ... &lt; 土曜日</span>
+
+<span class="co"># 曜日を月曜からスタートさせる</span>
+<span class="kw">wday</span>(x, <span class="dt">label =</span> <span class="ot">TRUE</span>, <span class="dt">abbr =</span> <span class="ot">FALSE</span>,
+     <span class="dt">week_start =</span> <span class="dv">1</span>)
+ <span class="co">#&gt;  [1] 土曜日</span>
+ <span class="co">#&gt;  7 Levels: 月曜日 &lt; 火曜日 &lt; 水曜日 &lt; 木曜日 &lt; 金曜日 &lt; ... &lt; 日曜日</span></code></pre></div>
+<p>セットしているlocaleにあわせて表示されます。自動的にやってくれるので便利です。</p>
+</div>
+</div>
+<div id="参照-2" class="section level2">
+<h2><span class="header-section-number">4.3</span> 参照</h2>
+<dl>
+<dt><a href="http://lubridate.tidyverse.org/reference/week.html">Get/set weeks component of a date-time</a></dt>
+<dd><p>週番号を取得する関数の説明</p>
+</dd>
+<dt><a href="http://lubridate.tidyverse.org/reference/day.html">Get/set days component of a date-time</a></dt>
+<dd><p>曜日を取得する関数<code>wday()</code>などの説明</p>
+</dd>
+</dl>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="03-daily_hourly.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="05-interval.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,158 @@
+# 仮想ログデータ生成
+
+```{r 01_setup, include=FALSE}
+knitr::opts_chunk$set(eval = TRUE,
+                      echo = TRUE,
+                      collapse = TRUE,
+                      comment = " #> ")
+```
+
+ここでは、これから使用していくための仮想ログデータを作成します。またこのログデータ作成を通じて、lubridateのperiodpオブジェクトについて紹介します。
+
+## 想定シナリオ
+
+準備するログデータは以下のようなシナリオとします:
+
+- あるサービスのアイテム購入履歴ログデータ
+- 2018年1月1日から50日間のデータ
+- 購入は24時間常に発生
+    - 発生確率は(めんどうなので)一様とする
+- アイテム名はitem1-5の5種類
+    - 価格は順に100, 500, 1000, 2000, 5000
+    - 購入発生比は順に100, 50, 10, 5, 2
+- 会員IDは1000001:1000300の300名
+    - 何度でも購入可能
+- ログデータの設計は以下の通り
+    - stamp: タイムスタンプ
+    - id: 会員ID
+    - value: 購入金額
+    - item: 項目ラベル
+- 今回は50日間で10000件の購入があったと仮定
+
+## データ生成
+
+上記シナリオにあうようにデータを生成します。
+
+### Rコード
+
+必要なパッケージを読み込みます。
+
+```{r 02_library}
+library(tidyverse)
+library(lubridate)
+```
+
+パラメータを設定します。
+
+```{r 02_set_params}
+start <- "2018-1-1 00:00:00" #開始日
+n <- 10000 # 購入件数
+duration_days <- 50 # ログの期間(日数)
+list_price <- c(100, 500, 1000, 2000, 5000) # アイテムの価格リスト
+list_item <- paste("item", 1:length(list_price), sep = "_") # アイテムリスト
+list_item_p <- c(100, 50, 10, 5, 2) # 発生比
+list_id <- 1000001:1000300 # 会員id
+
+```
+
+ログデータのdata.frameを生成します。今回は`df_log`というオブジェクトとします。
+
+```{r 02_gen_log_base}
+df_log <- data.frame(
+  # タイムスタンプを作成
+  # 開始日時を生成
+  stamp = ymd_hms(start) +
+    # 0-50までの整数からランダムに10000件生成し、それを日数データに変換して足す
+    days(sample(0:duration_days, n, replace = TRUE)) +
+    # 0-23までの整数からランダムに10000件生成し、それを時間データに変換して足す
+    hours(sample(0:23, n, replace = TRUE)) +
+    # 0-59までの整数からランダムに10000件生成し、それを分データに変換して足す
+    minutes(sample(0:59, n, replace = TRUE)) +
+    # 0-59までの整数からランダムに10000件生成し、それを病データに変換して足す
+    seconds(sample(0:59, n, replace = TRUE)),
+  # 会員IDをランダムに生成
+  id = sample(list_id, n, replace = TRUE),
+  # アイテム名をランダムに生成
+  item = sample(list_item, n, replace = TRUE, prob = list_item_p)
+) %>%
+  # ログデータっぽく、タイムスタンプで並べ替える
+  arrange(stamp)
+```
+
+ここまでの処理で、以下のようなデータができます:
+
+```{r 02_check_log_base, options}
+knitr::kable(sample_n(df_log, 10))
+```
+
+アイテム名(item)に対応する価格(value)を当てます。
+
+```{r 02_gen_df_log}
+# 置換用の名前付きベクトルを作成
+# 置換前文字列がnames, 置換後の文字列がベクトルの内容となるように
+pat <- as.character(list_price)
+names(pat) <- list_item
+# itemを正規表現で置換して数値に変換し、列として追加
+df_log <- df_log %>% 
+  # 対応する項目を一気に置換して整数型へ変換
+  # この変換方法については?stringr::str_replace_allを参照
+  mutate(value = str_replace_all(item, pat) %>% 
+           as.numeric())
+```
+
+生成したdf_logの一部を表示します:
+
+```{r 02_check_log, options}
+knitr::kable(sample_n(df_log, 10))
+```
+
+これで仮想ログデータが完成です。一応csvに出力しときます:
+
+```{r 02_write_df_log}
+readr::write_csv(df_log, path = "df_log.csv")
+```
+
+### 解説
+
+ここでのポイントはタイムスタンプ(stamp)の生成です。今回は開始日時(`r start`)から50日間でランダムに生成させる必要があります。そこで利用したのが`days()`などのperiodオブジェクトを生成する関数です。
+
+periodオブジェクトは、lubridateパッケージで準備している独自のクラスで、時間的な区間です。
+
+```{r 02_days_sample}
+# 「1日分」のperiodを生成
+# 引数には整数値を指定
+days(1)
+
+# 負の整数だと「マイナス1日間」となる
+days(-1)
+
+# 足し引きもできる
+days(3) - days(1)
+days(3) + days(-2)
+```
+
+なぜこのようなことができるかというと、periodオブジェクトは時間的な区間を数値的に置き換えて保持しているからです。なので、日時の加算・減算ができるようになります:
+
+```{r 02_perioid_calc}
+# 日付にperiodを加算
+# この場合は日付型(Date)になる
+ymd("20180224") + days(3)
+
+# 日時にperiodを加算
+# この場合はPOSIXct型になる
+ymd_hms("20180224 150000") + days(3)
+```
+
+また、ベクトルでの加算・減算も可能です。ベクトルの長さが揃っていない場合はリサイクルされます:
+
+```{r 02_priod_calc2}
+ymd("20180224") + days(1:3)
+```
+
+このperiodオブジェクトはdays以外にも時間(`hours()`)やミリ秒(`miliseconds()`)など準備してあります。これをうまく活用し、開始日時(`r start`)へランダムな日数、時間数、秒数を足し算してタイムスタンプを作成しました。
+
+## 参照
+
+[Create a period object](http://lubridate.tidyverse.org/reference/period.html)
+
+: `days()`などの関数の解説

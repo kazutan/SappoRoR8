@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>ログデータ処理で始めるlubridate入門</title>
+  <meta name="description" content="ログデータ処理で始めるlubridate入門">
+  <meta name="generator" content="bookdown 0.7.1 and GitBook 2.6.7">
+
+  <meta property="og:title" content="ログデータ処理で始めるlubridate入門" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="ログデータ処理で始めるlubridate入門" />
+  
+  
+  
+
+<meta name="author" content="前田和寛(@kazutan)">
+
+
+<meta name="date" content="2018-02-24">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="02-makelog_duration.html">
+<link rel="next" href="04-wday_week.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./index.html">ログデータ処理で学ぶlubridate入門</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>はじめに</a><ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#参考資料"><i class="fa fa-check"></i>参考資料</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="01-lubridate.html"><a href="01-lubridate.html"><i class="fa fa-check"></i><b>1</b> lubridateパッケージ</a><ul>
+<li class="chapter" data-level="1.1" data-path="01-lubridate.html"><a href="01-lubridate.html#lubridateパッケージとは"><i class="fa fa-check"></i><b>1.1</b> lubridateパッケージとは</a></li>
+<li class="chapter" data-level="1.2" data-path="01-lubridate.html"><a href="01-lubridate.html#インストールと読み込み"><i class="fa fa-check"></i><b>1.2</b> インストールと読み込み</a></li>
+<li class="chapter" data-level="1.3" data-path="01-lubridate.html"><a href="01-lubridate.html#日付や時刻の処理"><i class="fa fa-check"></i><b>1.3</b> 日付や時刻の処理</a><ul>
+<li class="chapter" data-level="1.3.1" data-path="01-lubridate.html"><a href="01-lubridate.html#日付データ"><i class="fa fa-check"></i><b>1.3.1</b> 日付データ</a></li>
+<li class="chapter" data-level="1.3.2" data-path="01-lubridate.html"><a href="01-lubridate.html#時刻データ"><i class="fa fa-check"></i><b>1.3.2</b> 時刻データ</a></li>
+<li class="chapter" data-level="1.3.3" data-path="01-lubridate.html"><a href="01-lubridate.html#日付時刻データ"><i class="fa fa-check"></i><b>1.3.3</b> 日付&amp;時刻データ</a></li>
+<li class="chapter" data-level="1.3.4" data-path="01-lubridate.html"><a href="01-lubridate.html#柔軟なフォーマットに対応するには"><i class="fa fa-check"></i><b>1.3.4</b> 柔軟なフォーマットに対応するには</a></li>
+</ul></li>
+<li class="chapter" data-level="1.4" data-path="01-lubridate.html"><a href="01-lubridate.html#参照"><i class="fa fa-check"></i><b>1.4</b> 参照</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="02-makelog_duration.html"><a href="02-makelog_duration.html"><i class="fa fa-check"></i><b>2</b> 仮想ログデータ生成</a><ul>
+<li class="chapter" data-level="2.1" data-path="02-makelog_duration.html"><a href="02-makelog_duration.html#想定シナリオ"><i class="fa fa-check"></i><b>2.1</b> 想定シナリオ</a></li>
+<li class="chapter" data-level="2.2" data-path="02-makelog_duration.html"><a href="02-makelog_duration.html#データ生成"><i class="fa fa-check"></i><b>2.2</b> データ生成</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="02-makelog_duration.html"><a href="02-makelog_duration.html#rコード"><i class="fa fa-check"></i><b>2.2.1</b> Rコード</a></li>
+<li class="chapter" data-level="2.2.2" data-path="02-makelog_duration.html"><a href="02-makelog_duration.html#解説"><i class="fa fa-check"></i><b>2.2.2</b> 解説</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="02-makelog_duration.html"><a href="02-makelog_duration.html#参照-1"><i class="fa fa-check"></i><b>2.3</b> 参照</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html"><i class="fa fa-check"></i><b>3</b> 日別・時間別集計</a><ul>
+<li class="chapter" data-level="3.1" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html#想定シナリオ-1"><i class="fa fa-check"></i><b>3.1</b> 想定シナリオ</a></li>
+<li class="chapter" data-level="3.2" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html#処理の実行"><i class="fa fa-check"></i><b>3.2</b> 処理の実行</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html#パッケージ読み込み"><i class="fa fa-check"></i><b>3.2.1</b> パッケージ読み込み</a></li>
+<li class="chapter" data-level="3.2.2" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html#データ読み込み"><i class="fa fa-check"></i><b>3.2.2</b> データ読み込み</a></li>
+<li class="chapter" data-level="3.2.3" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html#データハンドリングと可視化"><i class="fa fa-check"></i><b>3.2.3</b> データハンドリングと可視化</a></li>
+<li class="chapter" data-level="3.2.4" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html#解説-1"><i class="fa fa-check"></i><b>3.2.4</b> 解説</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="03-daily_hourly.html"><a href="03-daily_hourly.html#参考資料-1"><i class="fa fa-check"></i><b>3.3</b> 参考資料</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="04-wday_week.html"><a href="04-wday_week.html"><i class="fa fa-check"></i><b>4</b> 曜日別・週別集計</a><ul>
+<li class="chapter" data-level="4.1" data-path="04-wday_week.html"><a href="04-wday_week.html#想定シナリオ-2"><i class="fa fa-check"></i><b>4.1</b> 想定シナリオ</a></li>
+<li class="chapter" data-level="4.2" data-path="04-wday_week.html"><a href="04-wday_week.html#処理の実行-1"><i class="fa fa-check"></i><b>4.2</b> 処理の実行</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="04-wday_week.html"><a href="04-wday_week.html#パッケージ読み込み-1"><i class="fa fa-check"></i><b>4.2.1</b> パッケージ読み込み</a></li>
+<li class="chapter" data-level="4.2.2" data-path="04-wday_week.html"><a href="04-wday_week.html#データ読み込み-1"><i class="fa fa-check"></i><b>4.2.2</b> データ読み込み</a></li>
+<li class="chapter" data-level="4.2.3" data-path="04-wday_week.html"><a href="04-wday_week.html#データハンドリングと可視化-1"><i class="fa fa-check"></i><b>4.2.3</b> データハンドリングと可視化</a></li>
+<li class="chapter" data-level="4.2.4" data-path="04-wday_week.html"><a href="04-wday_week.html#解説-2"><i class="fa fa-check"></i><b>4.2.4</b> 解説</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="04-wday_week.html"><a href="04-wday_week.html#参照-2"><i class="fa fa-check"></i><b>4.3</b> 参照</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="05-interval.html"><a href="05-interval.html"><i class="fa fa-check"></i><b>5</b> 特定の期間を利用した処理</a><ul>
+<li class="chapter" data-level="5.1" data-path="05-interval.html"><a href="05-interval.html#想定シナリオ-3"><i class="fa fa-check"></i><b>5.1</b> 想定シナリオ</a></li>
+<li class="chapter" data-level="5.2" data-path="05-interval.html"><a href="05-interval.html#処理の実行-2"><i class="fa fa-check"></i><b>5.2</b> 処理の実行</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="05-interval.html"><a href="05-interval.html#パッケージ読み込み-2"><i class="fa fa-check"></i><b>5.2.1</b> パッケージ読み込み</a></li>
+<li class="chapter" data-level="5.2.2" data-path="05-interval.html"><a href="05-interval.html#データ読み込み-2"><i class="fa fa-check"></i><b>5.2.2</b> データ読み込み</a></li>
+<li class="chapter" data-level="5.2.3" data-path="05-interval.html"><a href="05-interval.html#データハンドリングと可視化-2"><i class="fa fa-check"></i><b>5.2.3</b> データハンドリングと可視化</a></li>
+<li class="chapter" data-level="5.2.4" data-path="05-interval.html"><a href="05-interval.html#解説-3"><i class="fa fa-check"></i><b>5.2.4</b> 解説</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="05-interval.html"><a href="05-interval.html#参照-3"><i class="fa fa-check"></i><b>5.3</b> 参照</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">ログデータ処理で始めるlubridate入門</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="日別時間別集計" class="section level1">
+<h1><span class="header-section-number">lesson: 3</span> 日別・時間別集計</h1>
+<p>ここでは、lesson2で準備した<code>df_log</code>という仮想ログデータを用いて、日別集計と時間別集計を算出してまとめることを目指します。その中でlubridateによる日時データからの特定の要素(日、時間など)取り出し解説します。</p>
+<div id="想定シナリオ-1" class="section level2">
+<h2><span class="header-section-number">3.1</span> 想定シナリオ</h2>
+<p>lesson2で作成したアイテム購入ログデータを元に日別集計を行います:</p>
+<ul>
+<li>日別購入件数</li>
+<li>日別売上合計</li>
+<li>日別購入単価平均</li>
+</ul>
+<p>この集計により、どの日に売上が多かったかなどを検証することができます。</p>
+<p>また、同様に時間帯別集計を行います:</p>
+<ul>
+<li>時間別購入件数</li>
+<li>時間別売上合計</li>
+<li>時間別購入単価平均</li>
+</ul>
+<p>この集計により、どの時間帯で売上が多かったかなどを検証することができます。</p>
+</div>
+<div id="処理の実行" class="section level2">
+<h2><span class="header-section-number">3.2</span> 処理の実行</h2>
+<div id="パッケージ読み込み" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> パッケージ読み込み</h3>
+<p>ここで使用するパッケージを読み込みます:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(lubridate)
+<span class="kw">library</span>(gridExtra)</code></pre></div>
+<p>tidyverseは楽ですね。あと可視化用にgridExtraを使います。</p>
+</div>
+<div id="データ読み込み" class="section level3">
+<h3><span class="header-section-number">3.2.2</span> データ読み込み</h3>
+<p>lesson2で作成したcsvを読み込みます。<code>readr::read_csv()</code>を使います:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_log &lt;-<span class="st"> </span>readr<span class="op">::</span><span class="kw">read_csv</span>(<span class="st">&quot;df_log.csv&quot;</span>)</code></pre></div>
+</div>
+<div id="データハンドリングと可視化" class="section level3">
+<h3><span class="header-section-number">3.2.3</span> データハンドリングと可視化</h3>
+<div id="日別" class="section level4">
+<h4><span class="header-section-number">3.2.3.1</span> 日別</h4>
+<p>それぞれの日でどれだけ売上があったかを集計してデータセットにします。基本的な流れは以下のとおりです:</p>
+<ul>
+<li>日時のタイムスタンプから日付の変数(date)を作成</li>
+<li>dateごとに処理するようにグループ化</li>
+<li>各種集計を実施</li>
+</ul>
+<p>実際のRのコードは以下のようになります:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_log_date &lt;-<span class="st"> </span>df_log <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># 日付による丸め込みを行った変数を準備</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">date =</span> <span class="kw">date</span>(stamp)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># 日付によるグループ化</span>
+<span class="st">  </span><span class="kw">group_by</span>(date) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># グループ化による集計</span>
+<span class="st">  </span><span class="kw">summarise</span>(
+    <span class="co"># 購入件数をカウント</span>
+    <span class="dt">n_buy =</span> <span class="kw">n</span>(),
+    <span class="co"># 売上合計</span>
+    <span class="dt">value_buy =</span> <span class="kw">sum</span>(value),
+    <span class="co"># 購入単価平均</span>
+    <span class="dt">mean_buy =</span> <span class="kw">mean</span>(value)
+  )</code></pre></div>
+<p>この処理を行ったデータセットは以下のようになります:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw">kable</span>(<span class="kw">head</span>(df_log_date, <span class="dv">10</span>))</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">date</th>
+<th align="right">n_buy</th>
+<th align="right">value_buy</th>
+<th align="right">mean_buy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2018-01-01</td>
+<td align="right">197</td>
+<td align="right">72800</td>
+<td align="right">369.5431</td>
+</tr>
+<tr class="even">
+<td align="left">2018-01-02</td>
+<td align="right">165</td>
+<td align="right">65700</td>
+<td align="right">398.1818</td>
+</tr>
+<tr class="odd">
+<td align="left">2018-01-03</td>
+<td align="right">188</td>
+<td align="right">64900</td>
+<td align="right">345.2128</td>
+</tr>
+<tr class="even">
+<td align="left">2018-01-04</td>
+<td align="right">189</td>
+<td align="right">67700</td>
+<td align="right">358.2011</td>
+</tr>
+<tr class="odd">
+<td align="left">2018-01-05</td>
+<td align="right">180</td>
+<td align="right">77800</td>
+<td align="right">432.2222</td>
+</tr>
+<tr class="even">
+<td align="left">2018-01-06</td>
+<td align="right">206</td>
+<td align="right">84000</td>
+<td align="right">407.7670</td>
+</tr>
+<tr class="odd">
+<td align="left">2018-01-07</td>
+<td align="right">195</td>
+<td align="right">78900</td>
+<td align="right">404.6154</td>
+</tr>
+<tr class="even">
+<td align="left">2018-01-08</td>
+<td align="right">174</td>
+<td align="right">64300</td>
+<td align="right">369.5402</td>
+</tr>
+<tr class="odd">
+<td align="left">2018-01-09</td>
+<td align="right">214</td>
+<td align="right">85600</td>
+<td align="right">400.0000</td>
+</tr>
+<tr class="even">
+<td align="left">2018-01-10</td>
+<td align="right">189</td>
+<td align="right">85600</td>
+<td align="right">452.9101</td>
+</tr>
+</tbody>
+</table>
+<p>このデータを元にggplot2で可視化してみます:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ベースとなるggplotオブジェクトを作成</span>
+p_date &lt;-<span class="st"> </span><span class="kw">ggplot</span>(df_log_date)
+<span class="co"># 日別購入件数</span>
+p_date1 &lt;-<span class="st"> </span>p_date <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> date, <span class="dt">y =</span> n_buy))
+<span class="co"># 日別売上合計</span>
+p_date2 &lt;-<span class="st"> </span>p_date <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> date, <span class="dt">y =</span> value_buy))
+<span class="co"># 日別購入単価平均</span>
+p_date3 &lt;-<span class="st"> </span>p_date <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> date, <span class="dt">y =</span> mean_buy))
+<span class="co"># plotを集約</span>
+<span class="kw">grid.arrange</span>(p_date1, p_date2, p_date3, <span class="dt">nrow =</span> <span class="dv">2</span>)</code></pre></div>
+<p><img src="intro_lubridate_files/figure-html/03_daily_plot-1.png" width="672" /></p>
+</div>
+<div id="時間別" class="section level4">
+<h4><span class="header-section-number">3.2.3.2</span> 時間別</h4>
+<p>それぞれの時間でどれだけ売上があったかを集計してデータセットにします。基本的な流れは以下のとおりです:</p>
+<ul>
+<li>日時のタイムスタンプから時間を取り出した変数(hour)を作成</li>
+<li>hourごとに処理するようにグループ化</li>
+<li>各種集計を実施</li>
+</ul>
+<p>実際のRのコードは以下のようになります:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_log_hour &lt;-<span class="st"> </span>df_log <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># 時間を取り出した変数を準備</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">hour =</span> <span class="kw">hour</span>(stamp)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># 時間によるグループ化</span>
+<span class="st">  </span><span class="kw">group_by</span>(hour) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># グループ化による集計</span>
+<span class="st">  </span><span class="kw">summarise</span>(
+    <span class="co"># 購入件数をカウント</span>
+    <span class="dt">n_buy =</span> <span class="kw">n</span>(),
+    <span class="co"># 売上合計</span>
+    <span class="dt">value_buy =</span> <span class="kw">sum</span>(value),
+    <span class="co"># 購入単価平均</span>
+    <span class="dt">mean_buy =</span> <span class="kw">mean</span>(value)
+  )</code></pre></div>
+<p>この処理を行ったデータセットは以下のようになります:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw">kable</span>(<span class="kw">head</span>(df_log_hour, <span class="dv">10</span>))</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">hour</th>
+<th align="right">n_buy</th>
+<th align="right">value_buy</th>
+<th align="right">mean_buy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">395</td>
+<td align="right">153400</td>
+<td align="right">388.3544</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">424</td>
+<td align="right">163200</td>
+<td align="right">384.9057</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">413</td>
+<td align="right">141300</td>
+<td align="right">342.1308</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">391</td>
+<td align="right">144000</td>
+<td align="right">368.2864</td>
+</tr>
+<tr class="odd">
+<td align="right">4</td>
+<td align="right">385</td>
+<td align="right">138900</td>
+<td align="right">360.7792</td>
+</tr>
+<tr class="even">
+<td align="right">5</td>
+<td align="right">440</td>
+<td align="right">170400</td>
+<td align="right">387.2727</td>
+</tr>
+<tr class="odd">
+<td align="right">6</td>
+<td align="right">435</td>
+<td align="right">151200</td>
+<td align="right">347.5862</td>
+</tr>
+<tr class="even">
+<td align="right">7</td>
+<td align="right">410</td>
+<td align="right">143900</td>
+<td align="right">350.9756</td>
+</tr>
+<tr class="odd">
+<td align="right">8</td>
+<td align="right">427</td>
+<td align="right">169800</td>
+<td align="right">397.6581</td>
+</tr>
+<tr class="even">
+<td align="right">9</td>
+<td align="right">428</td>
+<td align="right">175700</td>
+<td align="right">410.5140</td>
+</tr>
+</tbody>
+</table>
+<p>このデータを元にggplot2で可視化してみます:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ベースとなるggplotオブジェクトを作成</span>
+p_hour &lt;-<span class="st"> </span><span class="kw">ggplot</span>(df_log_hour)
+<span class="co"># 時間別購入件数</span>
+p_hour1 &lt;-<span class="st"> </span>p_hour <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> hour, <span class="dt">y =</span> n_buy))
+<span class="co"># 時間別売上合計</span>
+p_hour2 &lt;-<span class="st"> </span>p_hour <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> hour, <span class="dt">y =</span> value_buy))
+<span class="co"># 時間別購入単価平均</span>
+p_hour3 &lt;-<span class="st"> </span>p_hour <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> hour, <span class="dt">y =</span> mean_buy))
+<span class="co"># plotを集約</span>
+<span class="kw">grid.arrange</span>(p_hour1, p_hour2, p_hour3)</code></pre></div>
+<p><img src="intro_lubridate_files/figure-html/03_hour_plot-1.png" width="672" /></p>
+<p>ついでに、時間x項目でもやってみます。上との違いは、<code>group_by()</code>でitemも含めるところです</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_log_hour_item &lt;-<span class="st"> </span>df_log <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">hour =</span> <span class="kw">hour</span>(stamp)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># グループ化する変数にhour, itemを指定</span>
+<span class="st">  </span><span class="kw">group_by</span>(hour, item) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(
+    <span class="dt">n_buy =</span> <span class="kw">n</span>(),
+    <span class="dt">value_buy =</span> <span class="kw">sum</span>(value),
+    <span class="dt">mean_buy =</span> <span class="kw">mean</span>(value)
+  )</code></pre></div>
+<p>この処理を行ったデータセットは以下のようになります:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw">kable</span>(<span class="kw">head</span>(df_log_hour_item))</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">hour</th>
+<th align="left">item</th>
+<th align="right">n_buy</th>
+<th align="right">value_buy</th>
+<th align="right">mean_buy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="left">item_1</td>
+<td align="right">234</td>
+<td align="right">23400</td>
+<td align="right">100</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="left">item_2</td>
+<td align="right">116</td>
+<td align="right">58000</td>
+<td align="right">500</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="left">item_3</td>
+<td align="right">27</td>
+<td align="right">27000</td>
+<td align="right">1000</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="left">item_4</td>
+<td align="right">15</td>
+<td align="right">30000</td>
+<td align="right">2000</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="left">item_5</td>
+<td align="right">3</td>
+<td align="right">15000</td>
+<td align="right">5000</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">item_1</td>
+<td align="right">247</td>
+<td align="right">24700</td>
+<td align="right">100</td>
+</tr>
+</tbody>
+</table>
+<p>このデータを元にggplot2で可視化してみます:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 時間と項目で可視化</span>
+p_hour_item &lt;-<span class="st"> </span><span class="kw">ggplot</span>(df_log_hour_item)<span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_tile</span>(<span class="kw">aes</span>(<span class="dt">x =</span> hour, <span class="dt">y =</span> item, <span class="dt">fill =</span> value_buy))
+p_hour_item</code></pre></div>
+<p><img src="intro_lubridate_files/figure-html/03_hour_item_plot-1.png" width="672" /></p>
+</div>
+</div>
+<div id="解説-1" class="section level3">
+<h3><span class="header-section-number">3.2.4</span> 解説</h3>
+<p>今回の処理のポイントは、日時データから特定の要素の取り出しです。lubridateには、日時データから日付や時刻を取り出す関数が要してあります。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">ymd_hms</span>(<span class="st">&quot;2018-02-24 15:30:20&quot;</span>)
+
+<span class="co"># 年の取り出し</span>
+<span class="kw">year</span>(x)
+ <span class="co">#&gt;  [1] 2018</span>
+
+<span class="co"># 月の取り出し</span>
+<span class="kw">month</span>(x)
+ <span class="co">#&gt;  [1] 2</span>
+
+<span class="co"># 日の取り出し</span>
+<span class="kw">day</span>(x)
+ <span class="co">#&gt;  [1] 24</span>
+
+<span class="co"># 時間の取り出し</span>
+<span class="kw">hour</span>(x)
+ <span class="co">#&gt;  [1] 15</span></code></pre></div>
+<p>これらはすべて数値型となります。また、日時データから日付型のデータを取得したい場合は、<code>date()</code>を使ってください:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">date</span>(x)
+ <span class="co">#&gt;  [1] &quot;2018-02-24&quot;</span></code></pre></div>
+<p>こちらを利用すると、日付データが返ってきます。それぞれ用途によって使い分けるといいでしょう。</p>
+<p>また、日時データの丸め込み関数もいろいろ準備されていますが、ここでは省略します。</p>
+</div>
+</div>
+<div id="参考資料-1" class="section level2">
+<h2><span class="header-section-number">3.3</span> 参考資料</h2>
+<dl>
+<dt><a href="http://lubridate.tidyverse.org/reference/year.html">Get/set years component of a date-time</a></dt>
+<dd><p>年を取り出す<code>year()</code>の説明。</p>
+</dd>
+<dt><a href="http://lubridate.tidyverse.org/reference/hour.html">Get/set hours component of a date-time</a></dt>
+<dd><p>時間を取得する<code>hour()</code>の説明</p>
+</dd>
+<dt><a href="http://lubridate.tidyverse.org/reference/date.html">Get/set date component of a date-time</a></dt>
+<dd><p>lubridateのdate関数の説明</p>
+</dd>
+</dl>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="02-makelog_duration.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="04-wday_week.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

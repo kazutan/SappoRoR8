@@ -1,0 +1,224 @@
+# 日別・時間別集計
+
+ここでは、lesson2で準備した`df_log`という仮想ログデータを用いて、日別集計と時間別集計を算出してまとめることを目指します。その中でlubridateによる日時データからの特定の要素(日、時間など)取り出し解説します。
+
+## 想定シナリオ
+
+lesson2で作成したアイテム購入ログデータを元に日別集計を行います:
+
+- 日別購入件数
+- 日別売上合計
+- 日別購入単価平均
+
+この集計により、どの日に売上が多かったかなどを検証することができます。
+
+また、同様に時間帯別集計を行います:
+
+- 時間別購入件数
+- 時間別売上合計
+- 時間別購入単価平均
+
+この集計により、どの時間帯で売上が多かったかなどを検証することができます。
+
+## 処理の実行
+
+### パッケージ読み込み
+
+ここで使用するパッケージを読み込みます:
+
+```{r 03_library, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(lubridate)
+library(gridExtra)
+```
+
+tidyverseは楽ですね。あと可視化用にgridExtraを使います。
+
+### データ読み込み
+
+lesson2で作成したcsvを読み込みます。`readr::read_csv()`を使います:
+
+```{r 03_read_df_log, message=FALSE}
+df_log <- readr::read_csv("df_log.csv")
+```
+
+### データハンドリングと可視化
+
+#### 日別
+
+それぞれの日でどれだけ売上があったかを集計してデータセットにします。基本的な流れは以下のとおりです:
+
+- 日時のタイムスタンプから日付の変数(date)を作成
+- dateごとに処理するようにグループ化
+- 各種集計を実施
+
+実際のRのコードは以下のようになります:
+
+```{r 03_daily_handling}
+df_log_date <- df_log %>% 
+  # 日付による丸め込みを行った変数を準備
+  mutate(date = date(stamp)) %>% 
+  # 日付によるグループ化
+  group_by(date) %>% 
+  # グループ化による集計
+  summarise(
+    # 購入件数をカウント
+    n_buy = n(),
+    # 売上合計
+    value_buy = sum(value),
+    # 購入単価平均
+    mean_buy = mean(value)
+  )
+```
+
+この処理を行ったデータセットは以下のようになります:
+
+```{r 03_daily_table}
+knitr::kable(head(df_log_date, 10))
+```
+
+このデータを元にggplot2で可視化してみます:
+
+```{r 03_daily_plot}
+# ベースとなるggplotオブジェクトを作成
+p_date <- ggplot(df_log_date)
+# 日別購入件数
+p_date1 <- p_date + 
+  geom_line(aes(x = date, y = n_buy))
+# 日別売上合計
+p_date2 <- p_date + 
+  geom_line(aes(x = date, y = value_buy))
+# 日別購入単価平均
+p_date3 <- p_date + 
+  geom_line(aes(x = date, y = mean_buy))
+# plotを集約
+grid.arrange(p_date1, p_date2, p_date3, nrow = 2)
+```
+
+
+#### 時間別
+
+それぞれの時間でどれだけ売上があったかを集計してデータセットにします。基本的な流れは以下のとおりです:
+
+- 日時のタイムスタンプから時間を取り出した変数(hour)を作成
+- hourごとに処理するようにグループ化
+- 各種集計を実施
+
+実際のRのコードは以下のようになります:
+
+```{r 03_hour_handling}
+df_log_hour <- df_log %>% 
+  # 時間を取り出した変数を準備
+  mutate(hour = hour(stamp)) %>% 
+  # 時間によるグループ化
+  group_by(hour) %>% 
+  # グループ化による集計
+  summarise(
+    # 購入件数をカウント
+    n_buy = n(),
+    # 売上合計
+    value_buy = sum(value),
+    # 購入単価平均
+    mean_buy = mean(value)
+  )
+```
+
+この処理を行ったデータセットは以下のようになります:
+
+```{r 03_hour_table}
+knitr::kable(head(df_log_hour, 10))
+```
+
+このデータを元にggplot2で可視化してみます:
+
+```{r 03_hour_plot}
+# ベースとなるggplotオブジェクトを作成
+p_hour <- ggplot(df_log_hour)
+# 時間別購入件数
+p_hour1 <- p_hour +
+  geom_line(aes(x = hour, y = n_buy))
+# 時間別売上合計
+p_hour2 <- p_hour +
+  geom_line(aes(x = hour, y = value_buy))
+# 時間別購入単価平均
+p_hour3 <- p_hour +
+  geom_line(aes(x = hour, y = mean_buy))
+# plotを集約
+grid.arrange(p_hour1, p_hour2, p_hour3)
+```
+
+ついでに、時間x項目でもやってみます。上との違いは、`group_by()`でitemも含めるところです
+
+```{r 03_hour_item_handle}
+df_log_hour_item <- df_log %>% 
+  mutate(hour = hour(stamp)) %>% 
+  # グループ化する変数にhour, itemを指定
+  group_by(hour, item) %>% 
+  summarise(
+    n_buy = n(),
+    value_buy = sum(value),
+    mean_buy = mean(value)
+  )
+```
+
+この処理を行ったデータセットは以下のようになります:
+
+```{r 03_hour_item_table}
+knitr::kable(head(df_log_hour_item))
+```
+
+このデータを元にggplot2で可視化してみます:
+
+```{r 03_hour_item_plot}
+# 時間と項目で可視化
+p_hour_item <- ggplot(df_log_hour_item)+
+  geom_tile(aes(x = hour, y = item, fill = value_buy))
+p_hour_item
+```
+
+### 解説
+
+今回の処理のポイントは、日時データから特定の要素の取り出しです。lubridateには、日時データから日付や時刻を取り出す関数が要してあります。
+
+```{r 03_example1}
+x <- ymd_hms("2018-02-24 15:30:20")
+
+# 年の取り出し
+year(x)
+
+# 月の取り出し
+month(x)
+
+# 日の取り出し
+day(x)
+
+# 時間の取り出し
+hour(x)
+```
+
+これらはすべて数値型となります。また、日時データから日付型のデータを取得したい場合は、`date()`を使ってください:
+
+```{r 03_example2}
+date(x)
+```
+
+こちらを利用すると、日付データが返ってきます。それぞれ用途によって使い分けるといいでしょう。
+
+また、日時データの丸め込み関数もいろいろ準備されていますが、ここでは省略します。
+
+
+## 参考資料
+
+[Get/set years component of a date-time](http://lubridate.tidyverse.org/reference/year.html)
+
+: 年を取り出す`year()`の説明。
+
+[Get/set hours component of a date-time](http://lubridate.tidyverse.org/reference/hour.html)
+
+: 時間を取得する`hour()`の説明
+
+[Get/set date component of a date-time](http://lubridate.tidyverse.org/reference/date.html)
+
+: lubridateのdate関数の説明
+
+

@@ -1,0 +1,115 @@
+# lubridateパッケージ
+
+```{r 00_setup, include=FALSE}
+knitr::opts_chunk$set(eval = TRUE,
+                      echo = TRUE,
+                      collapse = TRUE,
+                      comment = " #> ")
+```
+
+
+## lubridateパッケージとは
+
+lubridateパッケージとは、日時データの処理に特化したパッケージです。いわゆるtidyverseパッケージ群に含まれます。
+
+(lubridateパッケージの特徴)
+
+## インストールと読み込み
+
+インストールは以下の方法で可能です:
+
+```{r 00_install, eval=FALSE}
+# CRAN版
+install.packages("lubridate")
+# GitHub版
+remotes::install_github("tidyverse/lubridate")
+# githubinstallからでもOK
+githubinstall::githubinstall("lubridate")
+```
+
+パッケージの読み込みもいつも通りです:
+
+```{r 00_library}
+library(lubridate)
+```
+
+
+## 日付や時刻の処理
+
+このlubridateは非常に様々な機能を提供します。まずは日付や時刻のparseについて見てみましょう。
+
+### 日付データ
+
+データセットを読み込んだ時、日付を表す変数が文字列として処理されるのはよくある話です。Rはこの文字列として表現されている文字列を日付型に変換する方法はいくつかありますが、lubridateは`ymd()`といった関数でシンプルに変換します:
+
+```{r ymd}
+ymd("2018-02-24")
+```
+
+この`ymd()`は、**Y**ear, **M**onth, **D**ayの頭文字で非常に直感的です。この例だと、この形式でしか対応していないように見えます。ですがこの関数は**だいたいそれっぽい文字列だったらperseしてしまう**という強さがあります。`?ymd`にある例を使って示します:
+
+```{r ymd_examples}
+x <- c(20090101, "2009-01-02", "2009 01 03", "2009-1-4",
+       "2009-1, 5", "Created on 2009 1 6", "200901 !!! 07")
+ymd(x)
+```
+
+parseできるかどうかの目安として、"年", "月", "日"にできそうな数値要素があり、それが弁別できそうな場合です。なので"月"と"日"だけだとうまくいきません。うまくいかないパターンについては`?ymd`のドキュメントを参照してください。
+
+また、年月日の並びでなくてもparseしてくれる関数が準備されています:
+
+```{r ymd_variation}
+dmy(010210)
+mdy(010210)
+```
+
+このような感じで"y","m","d"を並び替えれば思う通りにできるでしょう。
+
+### 時刻データ
+
+時刻データについても、日付のparse関数と同じように準備されています:
+
+```{r hms}
+hms("10:20:30")
+```
+
+考え方は`ymd()`と同様なので省略しますが、一度`?hms`を読んでください。
+
+### 日付&時刻データ
+
+両方を合わせたデータにしたい場合は、以下のようにします:
+
+```{r ymd_hms}
+ymd_hms("2018-2-24 15:30:15")
+```
+
+この`ymd_hms()`は**POSIXct**形式の日付ー時刻データオブジェクトを返します。つまり`r lubridate::origin`が基準になります。また、**タイムゾーンはUTCがデフォルトとなります**。タイムゾーンを指定したい場合は`tz=`オプションで指定します:
+
+```{r ymd_hms_tz}
+ymd_hms("2018-2-24 15:30:15", tz="Asia/Tokyo")
+```
+
+### 柔軟なフォーマットに対応するには
+
+よくある形ではなく、かなり独自なフォーマットで日時データを作成している場合もあるでしょう。そのような時には`parse_date_time()`などを使うとできます。詳細は省略しますが、`ymd_hms()`などでうまく行かない問は`?parse_date_time()`をチェックしてみて試してみてください。従来のR関数群で処理するよりもうまくいけるでしょう。
+
+## 参照
+
+[Parse dates with year, month, and day components](http://lubridate.tidyverse.org/reference/ymd.html)
+
+: `ymd()`など日付データparserの解説
+
+[Parse periods with hour, minute, and second components](http://lubridate.tidyverse.org/reference/hms.html)
+
+: `hms()`など時刻データparserの解説
+
+[Parse date-times with year, month, and day, hour, minute, and second components.](http://lubridate.tidyverse.org/reference/ymd_hms.html)
+
+: `ymd_hms`など日時データparserの解説
+
+[User friendly date-time parsing functions](http://lubridate.tidyverse.org/reference/parse_date_time.html)
+
+: `parse_date_time()`など柔軟な日時データフォーマットに対応する関数の解説
+
+
+
